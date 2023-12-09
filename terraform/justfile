@@ -1,0 +1,18 @@
+default:
+  cat README.md
+
+alias create := apply
+apply:
+  terraform apply -auto-approve
+
+destroy:
+  terraform destroy -auto-approve
+  rm -f *.tfstate*
+  rm -f talosconfig.yaml kubeconfig.yaml
+
+logs type="cri":
+  talosctl \
+    --talosconfig=talosconfig.yaml \
+    logs {{type}} -f \
+  | sed -E 's/^[^{]+//g' \
+  | jq
